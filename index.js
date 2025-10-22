@@ -11,9 +11,8 @@ const port = 3000
 
  app.use("/users",router)
 
-
 app.get('/', (req, res) => {
-  res.send('Hello World! developer for website')
+  res.send('Hello World! developer for nodejs')
 })
 
 app.listen(port, () => {
