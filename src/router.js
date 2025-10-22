@@ -2,28 +2,80 @@ import express from 'express'
 import { PrismaClient } from '../generated/prisma/index.js';
 const router = express.Router();
 const prisma = new PrismaClient()
-router.get('/',async(req,res)=>{
+router.get('/', async (req, res) => {
     try {
         const users = await prisma.user.findMany()
         res.status(201).json(users)
     } catch (error) {
         console.log(error.message)
     }
-    
+
+})
+
+router.get('/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    try {
+        const users = await prisma.user.findMany()
+        const data = users.filter((item)=>item.id===id)
+        res.status(201).json(data)
+    } catch (error) {
+        console.log(error.message)
+    }
+
 })
 
 router.post("/", async (req, res) => {
+    const { email, name } = req.body;
     try {
         const user = await prisma.user.create({
             data: {
-                email: 'elsa4@prisma.io',
-                name: 'Elsa Prisma',
+                email,
+                name
             },
         })
-        res.status(201).json({message:"data  send sucessfully",user})
+        res.status(201).json(user)
     } catch (error) {
-        res.status(500).json({message:"internal error "})
+        res.status(500).json({ message: "internal error " })
         console.log(error.message)
+    }
+})
+
+router.put("/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID" });
+    }
+    const { name, email } = req.body;
+    try {
+        const updateUser = await prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                ...(name && { name }),
+                ...(email && { email })
+            },
+        })
+        res.status(200).json(updateUser)
+    } catch (error) {
+        console.log(error.message)
+        router.delete("/:id", async (req, res) => {
+            const id = parseInt(req.params.id);
+            if (isNaN(id)) {
+                return res.status(400).json({ message: "Invalid ID" });
+            }
+            try {
+                const deleteUser = await prisma.user.delete({
+                    where: {
+                        id
+                    },
+                })
+                res.status(200).json(deleteUser)
+            } catch (error) {
+                console.log(error.message)
+                res.status(500).json({ message: "Internal error" })
+            }
+        })
     }
 })
 
