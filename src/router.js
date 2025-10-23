@@ -4,7 +4,11 @@ const router = express.Router();
 const prisma = new PrismaClient()
 router.get('/', async (req, res) => {
     try {
-        const users = await prisma.user.findMany()
+        const users = await prisma.user.findMany({
+            orderBy: {
+                id: 'asc'
+            }
+        })
         res.status(201).json(users)
     } catch (error) {
         console.log(error.message)
@@ -16,7 +20,7 @@ router.get('/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     try {
         const users = await prisma.user.findMany()
-        const data = users.filter((item)=>item.id===id)
+        const data = users.filter((item) => item.id === id)
         res.status(201).json(data)
     } catch (error) {
         console.log(error.message)
@@ -24,14 +28,16 @@ router.get('/:id', async (req, res) => {
 
 })
 
+
+
 router.post("/", async (req, res) => {
     const { email, name } = req.body;
     try {
-        const user = await prisma.user.create({
-            data: {
-                email,
-                name
-            },
+        const user = await prisma.user.createMany({
+            data: [
+                email,name
+            ]
+            ,
         })
         res.status(201).json(user)
     } catch (error) {
@@ -62,9 +68,9 @@ router.put("/:id", async (req, res) => {
     }
 })
 
-router.delete("/:id",async(req,res)=>{
+router.delete("/:id", async (req, res) => {
 
-     const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id);
     if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid ID" });
     }
@@ -77,7 +83,7 @@ router.delete("/:id",async(req,res)=>{
         res.status(200).json(updateUser)
     } catch (error) {
         console.log(error.message)
-        
+
     }
 
 })
