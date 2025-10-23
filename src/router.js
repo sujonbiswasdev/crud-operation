@@ -48,10 +48,10 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
     const id = parseInt(req.params.id);
+      const { name, email } = req.body;
     if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid ID" });
     }
-    const { name, email } = req.body;
     try {
         const updateUser = await prisma.user.update({
             where: {
