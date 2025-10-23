@@ -59,24 +59,27 @@ router.put("/:id", async (req, res) => {
         res.status(200).json(updateUser)
     } catch (error) {
         console.log(error.message)
-        router.delete("/:id", async (req, res) => {
-            const id = parseInt(req.params.id);
-            if (isNaN(id)) {
-                return res.status(400).json({ message: "Invalid ID" });
-            }
-            try {
-                const deleteUser = await prisma.user.delete({
-                    where: {
-                        id
-                    },
-                })
-                res.status(200).json(deleteUser)
-            } catch (error) {
-                console.log(error.message)
-                res.status(500).json({ message: "Internal error" })
+    }
+})
+
+router.delete("/:id",async(req,res)=>{
+
+     const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid ID" });
+    }
+    try {
+        const updateUser = await prisma.user.delete({
+            where: {
+                id
             }
         })
+        res.status(200).json(updateUser)
+    } catch (error) {
+        console.log(error.message)
+        
     }
+
 })
 
 export default router;
